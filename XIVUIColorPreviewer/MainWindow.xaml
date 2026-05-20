@@ -29,137 +29,147 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left panel -->
-            <ScrollViewer Grid.Column="0" Padding="0,0,16,0">
-                <StackPanel Spacing="16">
+            <Pivot Grid.Column="0" Margin="0,0,16,0">
+                <!-- Tab 1: Color editing + text blocks -->
+                <PivotItem Header="编辑">
+                    <ScrollViewer Padding="0,8,0,0">
+                        <StackPanel Spacing="16">
 
-                    <!-- Section: Color editing -->
-                    <TextBlock Text="配色编辑" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            <!-- Section: Color editing -->
+                            <TextBlock Text="配色编辑" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
-                    <TextBox x:Name="PreviewTextBox"
-                             Header="预览文本"
-                             Text="测试文本"
-                             TextChanged="PreviewTextBox_TextChanged" />
+                            <TextBox x:Name="PreviewTextBox"
+                                     Header="预览文本"
+                                     Text="测试文本"
+                                     TextChanged="PreviewTextBox_TextChanged" />
 
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="文本颜色" FontSize="13" Opacity="0.8" />
-                        <controls:ColorRowPicker x:Name="ForegroundPicker" />
-                    </StackPanel>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="文本颜色" FontSize="13" Opacity="0.8" />
+                                <controls:ColorRowPicker x:Name="ForegroundPicker" />
+                            </StackPanel>
 
-                    <CheckBox x:Name="StrokeCheckBox"
-                              Content="启用描边"
-                              Checked="StrokeCheckBox_Changed"
-                              Unchecked="StrokeCheckBox_Changed" />
+                            <CheckBox x:Name="StrokeCheckBox"
+                                      Content="启用描边"
+                                      Checked="StrokeCheckBox_Changed"
+                                      Unchecked="StrokeCheckBox_Changed" />
 
-                    <StackPanel x:Name="StrokePanel" Spacing="4" Visibility="Collapsed">
-                        <TextBlock Text="描边颜色" FontSize="13" Opacity="0.8" />
-                        <controls:ColorRowPicker x:Name="StrokePicker" />
-                    </StackPanel>
+                            <StackPanel x:Name="StrokePanel" Spacing="4" Visibility="Collapsed">
+                                <TextBlock Text="描边颜色" FontSize="13" Opacity="0.8" />
+                                <controls:ColorRowPicker x:Name="StrokePicker" />
+                            </StackPanel>
 
-                    <!-- Add / Update buttons -->
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Button Content="添加预览"
-                                Style="{ThemeResource AccentButtonStyle}"
-                                HorizontalAlignment="Stretch"
-                                Click="AddPreview_Click" />
-                        <Button x:Name="UpdateBlockButton"
-                                Grid.Column="1"
-                                Content="更新选中"
-                                HorizontalAlignment="Stretch"
-                                IsEnabled="False"
-                                Click="UpdateBlock_Click" />
-                    </Grid>
+                            <!-- Add / Update buttons -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <Button Content="添加预览"
+                                        Style="{ThemeResource AccentButtonStyle}"
+                                        HorizontalAlignment="Stretch"
+                                        Click="AddPreview_Click" />
+                                <Button x:Name="UpdateBlockButton"
+                                        Grid.Column="1"
+                                        Content="更新选中"
+                                        HorizontalAlignment="Stretch"
+                                        IsEnabled="False"
+                                        Click="UpdateBlock_Click" />
+                            </Grid>
 
-                    <MenuFlyoutSeparator />
+                            <MenuFlyoutSeparator />
 
-                    <!-- Section: Text blocks list (simple management) -->
-                    <TextBlock Text="文本块列表" Style="{ThemeResource SubtitleTextBlockStyle}" />
-                    <TextBlock Text="点击预览区中的文本可选中编辑"
-                               FontSize="12" Opacity="0.5" />
+                            <!-- Section: Text blocks list -->
+                            <TextBlock Text="文本块列表" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="点击预览区中的文本可选中编辑"
+                                       FontSize="12" Opacity="0.5" />
 
-                    <ListView x:Name="TextBlocksList"
-                              SelectionMode="Single"
-                              IsItemClickEnabled="True"
-                              ItemClick="TextBlocksList_ItemClick">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="4" ColumnSpacing="4">
-                                    <TextBlock Text="{Binding PreviewText}"
-                                               VerticalAlignment="Center"
-                                               TextTrimming="CharacterEllipsis" />
-                                    <Button Grid.Column="1"
-                                            Content="&#xE70E;"
-                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                            FontSize="11" Padding="6,4"
-                                            Tag="{Binding}"
-                                            Click="MoveUp_Click"
-                                            ToolTipService.ToolTip="上移" />
-                                    <Button Grid.Column="2"
-                                            Content="&#xE70D;"
-                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                            FontSize="11" Padding="6,4"
-                                            Tag="{Binding}"
-                                            Click="MoveDown_Click"
-                                            ToolTipService.ToolTip="下移" />
-                                    <Button Grid.Column="3"
-                                            Content="&#xE74D;"
-                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                            FontSize="11" Padding="6,4"
-                                            Tag="{Binding}"
-                                            Click="RemoveBlock_Click"
-                                            ToolTipService.ToolTip="删除" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                            <ListView x:Name="TextBlocksList"
+                                      SelectionMode="Single"
+                                      IsItemClickEnabled="True"
+                                      ItemClick="TextBlocksList_ItemClick">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="4" ColumnSpacing="4">
+                                            <TextBlock Text="{Binding PreviewText}"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <Button Grid.Column="1"
+                                                    Content="&#xE70E;"
+                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    FontSize="11" Padding="6,4"
+                                                    Tag="{Binding}"
+                                                    Click="MoveUp_Click"
+                                                    ToolTipService.ToolTip="上移" />
+                                            <Button Grid.Column="2"
+                                                    Content="&#xE70D;"
+                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    FontSize="11" Padding="6,4"
+                                                    Tag="{Binding}"
+                                                    Click="MoveDown_Click"
+                                                    ToolTipService.ToolTip="下移" />
+                                            <Button Grid.Column="3"
+                                                    Content="&#xE74D;"
+                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    FontSize="11" Padding="6,4"
+                                                    Tag="{Binding}"
+                                                    Click="RemoveBlock_Click"
+                                                    ToolTipService.ToolTip="删除" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
+                </PivotItem>
 
-                    <MenuFlyoutSeparator />
+                <!-- Tab 2: Scheme management -->
+                <PivotItem Header="方案">
+                    <ScrollViewer Padding="0,8,0,0">
+                        <StackPanel Spacing="16">
 
-                    <!-- Section: Scheme management -->
-                    <TextBlock Text="配色方案" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="配色方案" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                        <TextBox x:Name="SchemeNameBox"
-                                 PlaceholderText="方案名称" />
-                        <Button Grid.Column="1"
-                                Content="保存"
-                                Click="SaveScheme_Click" />
-                    </Grid>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBox x:Name="SchemeNameBox"
+                                         PlaceholderText="方案名称" />
+                                <Button Grid.Column="1"
+                                        Content="保存"
+                                        Click="SaveScheme_Click" />
+                            </Grid>
 
-                    <ListView x:Name="SchemesList"
-                              SelectionMode="None"
-                              IsItemClickEnabled="True"
-                              ItemClick="SchemesList_ItemClick">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="*,Auto" Padding="4"
-                                      PointerEntered="SchemeItem_PointerEntered">
-                                    <Grid.ContextFlyout>
-                                        <MenuFlyout>
-                                            <MenuFlyoutItem Text="重命名"
-                                                            Icon="Rename"
-                                                            Tag="{Binding}"
-                                                            Click="RenameScheme_Click" />
-                                            <MenuFlyoutItem Text="删除"
-                                                            Icon="Delete"
-                                                            Tag="{Binding}"
-                                                            Click="DeleteScheme_Click" />
-                                        </MenuFlyout>
-                                    </Grid.ContextFlyout>
-                                    <TextBlock Text="{Binding Name}"
-                                               VerticalAlignment="Center" />
-                                    <Button Grid.Column="1"
-                                            Content="&#xE74D;"
-                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                            FontSize="11" Padding="6,4"
-                                            Tag="{Binding}"
-                                            Click="DeleteScheme_Click"
-                                            ToolTipService.ToolTip="删除方案" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackPanel>
-            </ScrollViewer>
+                            <ListView x:Name="SchemesList"
+                                      SelectionMode="None"
+                                      IsItemClickEnabled="True"
+                                      ItemClick="SchemesList_ItemClick">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*,Auto" Padding="4"
+                                              PointerEntered="SchemeItem_PointerEntered">
+                                            <Grid.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Text="重命名"
+                                                                    Icon="Rename"
+                                                                    Tag="{Binding}"
+                                                                    Click="RenameScheme_Click" />
+                                                    <MenuFlyoutItem Text="删除"
+                                                                    Icon="Delete"
+                                                                    Tag="{Binding}"
+                                                                    Click="DeleteScheme_Click" />
+                                                </MenuFlyout>
+                                            </Grid.ContextFlyout>
+                                            <TextBlock Text="{Binding Name}"
+                                                       VerticalAlignment="Center" />
+                                            <Button Grid.Column="1"
+                                                    Content="&#xE74D;"
+                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    FontSize="11" Padding="6,4"
+                                                    Tag="{Binding}"
+                                                    Click="DeleteScheme_Click"
+                                                    ToolTipService.ToolTip="删除方案" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
+                </PivotItem>
+            </Pivot>
 
             <!-- Right panel: preview area -->
             <ScrollViewer Grid.Column="1"
