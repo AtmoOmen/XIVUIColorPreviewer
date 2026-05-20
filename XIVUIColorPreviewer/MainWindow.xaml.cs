@@ -1,4 +1,5 @@
 using Windows.UI;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,6 +14,8 @@ namespace XIVUIColorPreviewer;
 
 public sealed partial class MainWindow : Window
 {
+    private static readonly ILogger<MainWindow> s_logger = Log.For<MainWindow>();
+
     private readonly MainViewModel               _viewModel    = new();
     private readonly List<ThemePreviewCard>      _previewCards = [];
     private          TextBlockConfig?            _selectedTextBlock;
@@ -29,7 +32,28 @@ public sealed partial class MainWindow : Window
     {
         Activated -= MainWindow_Activated;
 
-        await _viewModel.InitializeAsync();
+        try
+        {
+            s_logger.LogInformation("MainWindow activated, starting initialization...");
+            await _viewModel.InitializeAsync();
+            s_logger.LogInformation("ViewModel initialized. Themes: {Count}, Colors: {Colors}",
+                _viewModel.ThemeNames.Count, _viewModel.ColorDataService.Entries.Count);
+        }
+        catch (Exception ex)
+        {
+            s_logger.LogCritical(ex, "Initialization failed");
+            LoadingRing.IsActive = false;
+            var dialog = new ContentDialog
+            {
+                Title = "初始化失败",
+                Content = ex.Message,
+                CloseButtonText = "确定",
+                XamlRoot = Content.XamlRoot
+            };
+            await dialog.ShowAsync();
+            return;
+        }
+
         _viewModel.PreviewChanged += RefreshAllPreviews;
 
         // Initialize pickers

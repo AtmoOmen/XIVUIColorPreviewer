@@ -1,4 +1,5 @@
 using Windows.UI;
+using Microsoft.Extensions.Logging;
 using XIVUIColorPreviewer.Models;
 
 namespace XIVUIColorPreviewer.Services;
@@ -12,6 +13,7 @@ public sealed class UIColorDataService
     private const string OnlineUrl =
         "https://raw.githubusercontent.com/xivapi/ffxiv-datamining/master/csv/en/UIColor.csv";
 
+    private static readonly ILogger<UIColorDataService> s_logger = Log.For<UIColorDataService>();
     private static readonly HttpClient s_httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
 
     public List<string>       ThemeNames { get; private set; } = [];
@@ -22,16 +24,21 @@ public sealed class UIColorDataService
     {
         var csv = await FetchCsvAsync();
         ParseCsv(csv);
+        s_logger.LogInformation("Loaded {EntryCount} color entries, {ThemeCount} themes", Entries.Count, ThemeNames.Count);
     }
 
     private async Task<string> FetchCsvAsync()
     {
         try
         {
-            return await s_httpClient.GetStringAsync(OnlineUrl);
+            s_logger.LogDebug("Fetching CSV from {Url}", OnlineUrl);
+            var result = await s_httpClient.GetStringAsync(OnlineUrl);
+            s_logger.LogInformation("Online CSV fetched successfully ({Length} chars)", result.Length);
+            return result;
         }
-        catch
+        catch (Exception ex)
         {
+            s_logger.LogWarning(ex, "Online fetch failed, falling back to local asset");
             // Fallback to bundled asset
             var localPath = Path.Combine
             (
@@ -41,6 +48,7 @@ public sealed class UIColorDataService
                 "Sheets",
                 "UIColor.csv"
             );
+            s_logger.LogDebug("Loading local CSV from {Path}", localPath);
             return await File.ReadAllTextAsync(localPath);
         }
     }

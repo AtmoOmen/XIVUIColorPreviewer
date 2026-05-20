@@ -8,14 +8,19 @@ namespace XIVUIColorPreviewer.Models;
 public partial class TextBlockConfig : ObservableObject
 {
     [ObservableProperty]
-    private string _previewText = "测试文本";
+    public partial string PreviewText { get; set; }
 
     [ObservableProperty]
-    private int _foregroundColorRow;
+    public partial int ForegroundColorRow { get; set; }
 
     [ObservableProperty]
-    private bool _strokeEnabled;
+    public partial bool StrokeEnabled { get; set; }
 
     [ObservableProperty]
-    private int _strokeColorRow;
+    public partial int StrokeColorRow { get; set; }
+
+    public TextBlockConfig()
+    {
+        PreviewText = "测试文本";
+    }
 }

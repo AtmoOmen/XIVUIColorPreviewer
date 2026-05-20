@@ -20,7 +20,7 @@ public sealed partial class ThemePreviewCard : UserControl
     // Minimum padding around text content
     private const double PaddingH    = 32;
     private const double PaddingV    = 24;
-    private const double FontSize    = 18;
+    private new const double FontSize = 18;
     private const double LineHeight  = FontSize * 1.5;
     private const double LineSpacing = 4;
 

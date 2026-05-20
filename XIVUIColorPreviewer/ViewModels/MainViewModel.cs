@@ -13,25 +13,25 @@ public partial class MainViewModel : ObservableObject
     private readonly ColorSchemeService _schemeService = new();
 
     [ObservableProperty]
-    private string _previewText = "测试文本";
+    public partial string PreviewText { get; set; }
 
     [ObservableProperty]
-    private int _foregroundColorRow;
+    public partial int ForegroundColorRow { get; set; }
 
     [ObservableProperty]
-    private bool _strokeEnabled;
+    public partial bool StrokeEnabled { get; set; }
 
     [ObservableProperty]
-    private int _strokeColorRow;
+    public partial int StrokeColorRow { get; set; }
 
     [ObservableProperty]
-    private string _newSchemeName = string.Empty;
+    public partial string NewSchemeName { get; set; }
 
     [ObservableProperty]
-    private ColorScheme? _selectedScheme;
+    public partial ColorScheme? SelectedScheme { get; set; }
 
     [ObservableProperty]
-    private bool _isLoading = true;
+    public partial bool IsLoading { get; set; }
 
     public ObservableCollection<TextBlockConfig> TextBlocks { get; } = [];
     public ObservableCollection<ColorScheme>     Schemes    { get; } = [];
@@ -42,8 +42,13 @@ public partial class MainViewModel : ObservableObject
 
     public event Action? PreviewChanged;
 
-    public MainViewModel() =>
+    public MainViewModel()
+    {
+        PreviewText = "测试文本";
+        NewSchemeName = string.Empty;
+        IsLoading = true;
         TextBlocks.CollectionChanged += TextBlocks_CollectionChanged;
+    }
 
     private void TextBlocks_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
