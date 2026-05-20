@@ -11,7 +11,7 @@ public sealed class UIColorEntry
     public int RowNumber { get; init; }
 
     /// <summary>
-    ///     Theme name -> ARGB Color value (after endianness conversion).
+    ///     Theme name -> RGBA Color value (after endianness conversion).
     /// </summary>
     public Dictionary<string, Color> ThemeColors { get; init; } = [];
 }
