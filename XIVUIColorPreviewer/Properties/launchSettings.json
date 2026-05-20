@@ -1,10 +1,10 @@
 {
-  "profiles": {
-    "XIVUIColorPreviewer (Package)": {
-      "commandName": "MsixPackage"
-    },
-    "XIVUIColorPreviewer (Unpackaged)": {
-      "commandName": "Project"
+    "profiles": {
+        "XIVUIColorPreviewer (Package)": {
+            "commandName": "MsixPackage"
+        },
+        "XIVUIColorPreviewer (Unpackaged)": {
+            "commandName": "Project"
+        }
     }
-  }
 }

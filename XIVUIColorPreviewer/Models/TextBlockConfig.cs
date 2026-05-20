@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace XIVUIColorPreviewer.Models;
 
 /// <summary>
-/// Represents a single text block in the preview area.
+///     Represents a single text block in the preview area.
 /// </summary>
 public partial class TextBlockConfig : ObservableObject
 {

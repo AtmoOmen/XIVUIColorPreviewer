@@ -1,7 +1,7 @@
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Windows.UI;
 using XIVUIColorPreviewer.Models;
 using XIVUIColorPreviewer.Services;
 
@@ -10,13 +10,17 @@ namespace XIVUIColorPreviewer.Controls;
 public sealed partial class ColorRowPicker : UserControl
 {
     private UIColorDataService? _dataService;
-    private bool _suppressSelectionChanged;
-    private List<int> _recommendations = [];
+    private bool                _suppressSelectionChanged;
+    private List<int>           _recommendations = [];
 
     public static readonly DependencyProperty SelectedRowNumberProperty =
-        DependencyProperty.Register(
-            nameof(SelectedRowNumber), typeof(int), typeof(ColorRowPicker),
-            new PropertyMetadata(0, OnSelectedRowNumberChanged));
+        DependencyProperty.Register
+        (
+            nameof(SelectedRowNumber),
+            typeof(int),
+            typeof(ColorRowPicker),
+            new PropertyMetadata(0, OnSelectedRowNumberChanged)
+        );
 
     public int SelectedRowNumber
     {
@@ -27,7 +31,7 @@ public sealed partial class ColorRowPicker : UserControl
     public event EventHandler<int>? RowNumberChanged;
 
     /// <summary>
-    /// Fired when the dropdown is opened. Parent can use this to trigger recommendation refresh.
+    ///     Fired when the dropdown is opened. Parent can use this to trigger recommendation refresh.
     /// </summary>
     public event EventHandler? DropDownOpened;
 
@@ -44,8 +48,8 @@ public sealed partial class ColorRowPicker : UserControl
     }
 
     /// <summary>
-    /// Sets recommended row numbers to display at the top of the dropdown,
-    /// separated from the full list by a divider.
+    ///     Sets recommended row numbers to display at the top of the dropdown,
+    ///     separated from the full list by a divider.
     /// </summary>
     public void SetRecommendations(List<int> recommendedRows)
     {
@@ -54,7 +58,7 @@ public sealed partial class ColorRowPicker : UserControl
     }
 
     /// <summary>
-    /// Clears any recommendations, showing only the standard list.
+    ///     Clears any recommendations, showing only the standard list.
     /// </summary>
     public void ClearRecommendations()
     {
@@ -63,10 +67,8 @@ public sealed partial class ColorRowPicker : UserControl
         RebuildDropdown();
     }
 
-    private void PopulateComboBox()
-    {
+    private void PopulateComboBox() =>
         RebuildDropdown();
-    }
 
     private void RebuildDropdown()
     {
@@ -83,17 +85,17 @@ public sealed partial class ColorRowPicker : UserControl
                 var entry = _dataService.GetEntry(rowNum);
                 if (entry == null) continue;
 
-                var item = CreateComboBoxItem(entry, isRecommended: true);
+                var item = CreateComboBoxItem(entry, true);
                 RowComboBox.Items.Add(item);
             }
 
             // Add separator
             var separator = new ComboBoxItem
             {
-                Content = new MenuFlyoutSeparator { Margin = new Thickness(-12, 0, -12, 0) },
-                IsEnabled = false,
+                Content          = new MenuFlyoutSeparator { Margin = new Thickness(-12, 0, -12, 0) },
+                IsEnabled        = false,
                 IsHitTestVisible = false,
-                Tag = -1 // sentinel value
+                Tag              = -1 // sentinel value
             };
             RowComboBox.Items.Add(separator);
         }
@@ -101,7 +103,7 @@ public sealed partial class ColorRowPicker : UserControl
         // Add all items
         foreach (var entry in _dataService.Entries)
         {
-            var item = CreateComboBoxItem(entry, isRecommended: false);
+            var item = CreateComboBoxItem(entry, false);
             RowComboBox.Items.Add(item);
         }
 
@@ -118,10 +120,12 @@ public sealed partial class ColorRowPicker : UserControl
         {
             var star = new TextBlock
             {
-                Text = "★", // ★
+                Text     = "★", // ★
                 FontSize = 12,
-                Foreground = new SolidColorBrush(
-                    Microsoft.UI.ColorHelper.FromArgb(255, 255, 200, 50)),
+                Foreground = new SolidColorBrush
+                (
+                    ColorHelper.FromArgb(255, 255, 200, 50)
+                ),
                 VerticalAlignment = VerticalAlignment.Center
             };
             panel.Children.Add(star);
@@ -130,9 +134,9 @@ public sealed partial class ColorRowPicker : UserControl
         // Row number text
         var rowText = new TextBlock
         {
-            Text = entry.RowNumber.ToString(),
+            Text              = entry.RowNumber.ToString(),
             VerticalAlignment = VerticalAlignment.Center,
-            Width = 36
+            Width             = 36
         };
         panel.Children.Add(rowText);
 
@@ -143,15 +147,19 @@ public sealed partial class ColorRowPicker : UserControl
             {
                 var swatch = new Border
                 {
-                    Width = 16,
-                    Height = 16,
+                    Width        = 16,
+                    Height       = 16,
                     CornerRadius = new CornerRadius(2),
-                    Background = new SolidColorBrush(
-                        Microsoft.UI.ColorHelper.FromArgb(color.A, color.R, color.G, color.B)),
-                    BorderBrush = new SolidColorBrush(
-                        Microsoft.UI.ColorHelper.FromArgb(80, 128, 128, 128)),
+                    Background = new SolidColorBrush
+                    (
+                        ColorHelper.FromArgb(color.A, color.R, color.G, color.B)
+                    ),
+                    BorderBrush = new SolidColorBrush
+                    (
+                        ColorHelper.FromArgb(80, 128, 128, 128)
+                    ),
                     BorderThickness = new Thickness(1),
-                    Margin = new Thickness(1, 0, 1, 0)
+                    Margin          = new Thickness(1, 0, 1, 0)
                 };
                 ToolTipService.SetToolTip(swatch, themeName);
                 panel.Children.Add(swatch);
@@ -164,34 +172,30 @@ public sealed partial class ColorRowPicker : UserControl
     private void SyncSelection()
     {
         _suppressSelectionChanged = true;
-        for (int i = 0; i < RowComboBox.Items.Count; i++)
-        {
+
+        for (var i = 0; i < RowComboBox.Items.Count; i++)
             if (RowComboBox.Items[i] is ComboBoxItem item && item.Tag is int rowNum && rowNum == SelectedRowNumber)
             {
                 RowComboBox.SelectedIndex = i;
                 _suppressSelectionChanged = false;
                 return;
             }
-        }
+
         _suppressSelectionChanged = false;
     }
 
     private static void OnSelectedRowNumberChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is ColorRowPicker picker)
-        {
-            picker.SyncSelection();
-        }
+        if (d is ColorRowPicker picker) picker.SyncSelection();
     }
 
-    private void RowComboBox_DropDownOpened(object? sender, object e)
-    {
+    private void RowComboBox_DropDownOpened(object? sender, object e) =>
         DropDownOpened?.Invoke(this, EventArgs.Empty);
-    }
 
     private void RowComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_suppressSelectionChanged) return;
+
         if (RowComboBox.SelectedItem is ComboBoxItem item && item.Tag is int rowNum && rowNum >= 0)
         {
             SelectedRowNumber = rowNum;
@@ -203,6 +207,7 @@ public sealed partial class ColorRowPicker : UserControl
     {
         if (_dataService == null || _dataService.RowNumbers.Count == 0) return;
         var idx = _dataService.RowNumbers.IndexOf(SelectedRowNumber);
+
         if (idx > 0)
         {
             SelectedRowNumber = _dataService.RowNumbers[idx - 1];
@@ -214,6 +219,7 @@ public sealed partial class ColorRowPicker : UserControl
     {
         if (_dataService == null || _dataService.RowNumbers.Count == 0) return;
         var idx = _dataService.RowNumbers.IndexOf(SelectedRowNumber);
+
         if (idx < _dataService.RowNumbers.Count - 1)
         {
             SelectedRowNumber = _dataService.RowNumbers[idx + 1];

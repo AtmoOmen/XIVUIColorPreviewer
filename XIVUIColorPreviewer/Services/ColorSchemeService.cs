@@ -4,13 +4,16 @@ using XIVUIColorPreviewer.Models;
 namespace XIVUIColorPreviewer.Services;
 
 /// <summary>
-/// Manages persistence of color schemes to a local JSON file.
+///     Manages persistence of color schemes to a local JSON file.
 /// </summary>
 public sealed class ColorSchemeService
 {
-    private static readonly string s_schemesFilePath = Path.Combine(
+    private static readonly string s_schemesFilePath = Path.Combine
+    (
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "XIVUIColorPreviewer", "schemes.json");
+        "XIVUIColorPreviewer",
+        "schemes.json"
+    );
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
     {
@@ -64,6 +67,7 @@ public sealed class ColorSchemeService
     public async Task RenameSchemeAsync(string oldName, string newName)
     {
         var scheme = Schemes.FirstOrDefault(s => s.Name == oldName);
+
         if (scheme != null)
         {
             scheme.Name = newName;

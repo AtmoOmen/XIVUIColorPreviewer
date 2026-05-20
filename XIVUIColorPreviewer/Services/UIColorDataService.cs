@@ -1,12 +1,11 @@
-using System.Net.Http;
 using Windows.UI;
 using XIVUIColorPreviewer.Models;
 
 namespace XIVUIColorPreviewer.Services;
 
 /// <summary>
-/// Loads and provides access to the UIColor data table.
-/// Attempts online fetch first, falls back to bundled CSV.
+///     Loads and provides access to the UIColor data table.
+///     Attempts online fetch first, falls back to bundled CSV.
 /// </summary>
 public sealed class UIColorDataService
 {
@@ -15,13 +14,13 @@ public sealed class UIColorDataService
 
     private static readonly HttpClient s_httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
 
-    public List<string> ThemeNames { get; private set; } = [];
-    public List<UIColorEntry> Entries { get; private set; } = [];
-    public List<int> RowNumbers { get; private set; } = [];
+    public List<string>       ThemeNames { get; private set; } = [];
+    public List<UIColorEntry> Entries    { get; private set; } = [];
+    public List<int>          RowNumbers { get; private set; } = [];
 
     public async Task LoadAsync()
     {
-        string csv = await FetchCsvAsync();
+        var csv = await FetchCsvAsync();
         ParseCsv(csv);
     }
 
@@ -34,8 +33,14 @@ public sealed class UIColorDataService
         catch
         {
             // Fallback to bundled asset
-            var localPath = Path.Combine(
-                AppContext.BaseDirectory, "Assets", "Game", "Sheets", "UIColor.csv");
+            var localPath = Path.Combine
+            (
+                AppContext.BaseDirectory,
+                "Assets",
+                "Game",
+                "Sheets",
+                "UIColor.csv"
+            );
             return await File.ReadAllTextAsync(localPath);
         }
     }
@@ -49,52 +54,42 @@ public sealed class UIColorDataService
         var headers = lines[0].Split(',');
         ThemeNames = headers[1..].ToList();
 
-        var entries = new List<UIColorEntry>();
+        var entries    = new List<UIColorEntry>();
         var rowNumbers = new List<int>();
 
-        for (int i = 1; i < lines.Length; i++)
+        for (var i = 1; i < lines.Length; i++)
         {
             var parts = lines[i].Split(',');
             if (parts.Length < 2) continue;
 
-            if (!int.TryParse(parts[0], out int rowNum)) continue;
+            if (!int.TryParse(parts[0], out var rowNum)) continue;
 
             var themeColors = new Dictionary<string, Color>();
-            for (int t = 0; t < ThemeNames.Count && t + 1 < parts.Length; t++)
-            {
-                if (uint.TryParse(parts[t + 1], out uint rawValue))
-                {
-                    themeColors[ThemeNames[t]] = ConvertToColor(rawValue);
-                }
-                else
-                {
-                    themeColors[ThemeNames[t]] = Color.FromArgb(0, 0, 0, 0);
-                }
-            }
+            for (var t = 0; t < ThemeNames.Count && t + 1 < parts.Length; t++)
+                if (uint.TryParse(parts[t + 1], out var rawValue)) themeColors[ThemeNames[t]] = ConvertToColor(rawValue);
+                else themeColors[ThemeNames[t]]                                               = Color.FromArgb(0, 0, 0, 0);
 
             entries.Add(new UIColorEntry { RowNumber = rowNum, ThemeColors = themeColors });
             rowNumbers.Add(rowNum);
         }
 
-        Entries = entries;
+        Entries    = entries;
         RowNumbers = rowNumbers;
     }
 
     /// <summary>
-    /// Converts a raw uint32 value from the CSV to a Color.
-    /// The raw value is stored as RGBA in big-endian byte order.
+    ///     Converts a raw uint32 value from the CSV to a Color.
+    ///     The raw value is stored as RGBA in big-endian byte order.
     /// </summary>
     private static Color ConvertToColor(uint rawValue)
     {
-        byte r = (byte)((rawValue >> 24) & 0xFF);
-        byte g = (byte)((rawValue >> 16) & 0xFF);
-        byte b = (byte)((rawValue >> 8) & 0xFF);
-        byte a = (byte)(rawValue & 0xFF);
+        var r = (byte)((rawValue >> 24) & 0xFF);
+        var g = (byte)((rawValue >> 16) & 0xFF);
+        var b = (byte)((rawValue >> 8)  & 0xFF);
+        var a = (byte)(rawValue         & 0xFF);
         return Color.FromArgb(a, r, g, b);
     }
 
-    public UIColorEntry? GetEntry(int rowNumber)
-    {
-        return Entries.FirstOrDefault(e => e.RowNumber == rowNumber);
-    }
+    public UIColorEntry? GetEntry(int rowNumber) =>
+        Entries.FirstOrDefault(e => e.RowNumber == rowNumber);
 }

@@ -1,3 +1,5 @@
+using Windows.UI;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -11,15 +13,15 @@ namespace XIVUIColorPreviewer;
 
 public sealed partial class MainWindow : Window
 {
-    private readonly MainViewModel _viewModel = new();
-    private readonly List<ThemePreviewCard> _previewCards = [];
-    private TextBlockConfig? _selectedTextBlock;
-    private ColorRecommendationService? _recommendationService;
+    private readonly MainViewModel               _viewModel    = new();
+    private readonly List<ThemePreviewCard>      _previewCards = [];
+    private          TextBlockConfig?            _selectedTextBlock;
+    private          ColorRecommendationService? _recommendationService;
 
     public MainWindow()
     {
         InitializeComponent();
-        Title = "FFXIV UIColor 配色预览器";
+        Title     =  "FFXIV UIColor 配色预览器";
         Activated += MainWindow_Activated;
     }
 
@@ -34,23 +36,23 @@ public sealed partial class MainWindow : Window
         ForegroundPicker.Initialize(_viewModel.ColorDataService);
         StrokePicker.Initialize(_viewModel.ColorDataService);
         ForegroundPicker.RowNumberChanged += ForegroundPicker_RowNumberChanged;
-        StrokePicker.RowNumberChanged += StrokePicker_RowNumberChanged;
-        StrokePicker.DropDownOpened += StrokePicker_DropDownOpened;
+        StrokePicker.RowNumberChanged     += StrokePicker_RowNumberChanged;
+        StrokePicker.DropDownOpened       += StrokePicker_DropDownOpened;
 
         _recommendationService = new ColorRecommendationService(_viewModel.ColorDataService);
 
         if (_viewModel.ColorDataService.RowNumbers.Count > 0)
         {
             ForegroundPicker.SelectedRowNumber = _viewModel.ColorDataService.RowNumbers[0];
-            StrokePicker.SelectedRowNumber = _viewModel.ColorDataService.RowNumbers[0];
+            StrokePicker.SelectedRowNumber     = _viewModel.ColorDataService.RowNumbers[0];
         }
 
         TextBlocksList.ItemsSource = _viewModel.TextBlocks;
-        SchemesList.ItemsSource = _viewModel.Schemes;
+        SchemesList.ItemsSource    = _viewModel.Schemes;
 
         BuildPreviewGrid();
 
-        LoadingRing.IsActive = false;
+        LoadingRing.IsActive   = false;
         MainContent.Visibility = Visibility.Visible;
     }
 
@@ -59,10 +61,10 @@ public sealed partial class MainWindow : Window
         PreviewPanel.Children.Clear();
         _previewCards.Clear();
 
-        var themeNames = _viewModel.ThemeNames;
+        var   themeNames = _viewModel.ThemeNames;
         Grid? currentRow = null;
 
-        for (int i = 0; i < themeNames.Count; i++)
+        for (var i = 0; i < themeNames.Count; i++)
         {
             if (i % 2 == 0)
             {
@@ -88,35 +90,30 @@ public sealed partial class MainWindow : Window
     }
 
     /// <summary>
-    /// When a text block is clicked in any preview card, select it and load into editor.
+    ///     When a text block is clicked in any preview card, select it and load into editor.
     /// </summary>
-    private void Card_TextBlockClicked(object? sender, TextBlockConfig config)
-    {
+    private void Card_TextBlockClicked(object? sender, TextBlockConfig config) =>
         SelectTextBlock(config);
-    }
 
     private void SelectTextBlock(TextBlockConfig config)
     {
-        _selectedTextBlock = config;
+        _selectedTextBlock          = config;
         UpdateBlockButton.IsEnabled = true;
 
         // Load settings into editor
-        PreviewTextBox.Text = config.PreviewText;
+        PreviewTextBox.Text                = config.PreviewText;
         ForegroundPicker.SelectedRowNumber = config.ForegroundColorRow;
-        StrokeCheckBox.IsChecked = config.StrokeEnabled;
-        StrokePanel.Visibility = config.StrokeEnabled ? Visibility.Visible : Visibility.Collapsed;
-        StrokePicker.SelectedRowNumber = config.StrokeColorRow;
+        StrokeCheckBox.IsChecked           = config.StrokeEnabled;
+        StrokePanel.Visibility             = config.StrokeEnabled ? Visibility.Visible : Visibility.Collapsed;
+        StrokePicker.SelectedRowNumber     = config.StrokeColorRow;
 
         _viewModel.ForegroundColorRow = config.ForegroundColorRow;
-        _viewModel.StrokeEnabled = config.StrokeEnabled;
-        _viewModel.StrokeColorRow = config.StrokeColorRow;
-        _viewModel.PreviewText = config.PreviewText;
+        _viewModel.StrokeEnabled      = config.StrokeEnabled;
+        _viewModel.StrokeColorRow     = config.StrokeColorRow;
+        _viewModel.PreviewText        = config.PreviewText;
 
         // Update selection highlight in all cards
-        foreach (var card in _previewCards)
-        {
-            card.SetSelectedBlock(config);
-        }
+        foreach (var card in _previewCards) card.SetSelectedBlock(config);
 
         // Also select in the list
         TextBlocksList.SelectedItem = config;
@@ -124,32 +121,23 @@ public sealed partial class MainWindow : Window
 
     private void RefreshAllPreviews()
     {
-        foreach (var card in _previewCards)
-        {
-            card.UpdatePreview(_viewModel.TextBlocks);
-        }
+        foreach (var card in _previewCards) card.UpdatePreview(_viewModel.TextBlocks);
     }
 
-    private void PreviewTextBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
+    private void PreviewTextBox_TextChanged(object sender, TextChangedEventArgs e) =>
         _viewModel.PreviewText = PreviewTextBox.Text;
-    }
 
-    private void ForegroundPicker_RowNumberChanged(object? sender, int rowNumber)
-    {
+    private void ForegroundPicker_RowNumberChanged(object? sender, int rowNumber) =>
         _viewModel.ForegroundColorRow = rowNumber;
-    }
 
     private void StrokeCheckBox_Changed(object sender, RoutedEventArgs e)
     {
         _viewModel.StrokeEnabled = StrokeCheckBox.IsChecked == true;
-        StrokePanel.Visibility = _viewModel.StrokeEnabled ? Visibility.Visible : Visibility.Collapsed;
+        StrokePanel.Visibility   = _viewModel.StrokeEnabled ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void StrokePicker_RowNumberChanged(object? sender, int rowNumber)
-    {
+    private void StrokePicker_RowNumberChanged(object? sender, int rowNumber) =>
         _viewModel.StrokeColorRow = rowNumber;
-    }
 
     private void StrokePicker_DropDownOpened(object? sender, EventArgs e)
     {
@@ -160,36 +148,28 @@ public sealed partial class MainWindow : Window
         StrokePicker.SetRecommendations(recommendations);
     }
 
-    private void AddPreview_Click(object sender, RoutedEventArgs e)
-    {
+    private void AddPreview_Click(object sender, RoutedEventArgs e) =>
         _viewModel.AddTextBlockCommand.Execute(null);
-    }
 
     private void UpdateBlock_Click(object sender, RoutedEventArgs e)
     {
         if (_selectedTextBlock == null) return;
 
-        _selectedTextBlock.PreviewText = PreviewTextBox.Text;
+        _selectedTextBlock.PreviewText        = PreviewTextBox.Text;
         _selectedTextBlock.ForegroundColorRow = _viewModel.ForegroundColorRow;
-        _selectedTextBlock.StrokeEnabled = _viewModel.StrokeEnabled;
-        _selectedTextBlock.StrokeColorRow = _viewModel.StrokeColorRow;
+        _selectedTextBlock.StrokeEnabled      = _viewModel.StrokeEnabled;
+        _selectedTextBlock.StrokeColorRow     = _viewModel.StrokeColorRow;
         // PropertyChanged auto-triggers preview refresh
     }
 
     private void MoveUp_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is TextBlockConfig config)
-        {
-            _viewModel.MoveTextBlockUpCommand.Execute(config);
-        }
+        if (sender is Button btn && btn.Tag is TextBlockConfig config) _viewModel.MoveTextBlockUpCommand.Execute(config);
     }
 
     private void MoveDown_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is TextBlockConfig config)
-        {
-            _viewModel.MoveTextBlockDownCommand.Execute(config);
-        }
+        if (sender is Button btn && btn.Tag is TextBlockConfig config) _viewModel.MoveTextBlockDownCommand.Execute(config);
     }
 
     private void RemoveBlock_Click(object sender, RoutedEventArgs e)
@@ -198,21 +178,19 @@ public sealed partial class MainWindow : Window
         {
             if (config == _selectedTextBlock)
             {
-                _selectedTextBlock = null;
+                _selectedTextBlock          = null;
                 UpdateBlockButton.IsEnabled = false;
                 foreach (var card in _previewCards)
                     card.SetSelectedBlock(null);
             }
+
             _viewModel.RemoveTextBlockCommand.Execute(config);
         }
     }
 
     private void TextBlocksList_ItemClick(object sender, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is TextBlockConfig config)
-        {
-            SelectTextBlock(config);
-        }
+        if (e.ClickedItem is TextBlockConfig config) SelectTextBlock(config);
     }
 
     private async void SaveScheme_Click(object sender, RoutedEventArgs e)
@@ -224,10 +202,7 @@ public sealed partial class MainWindow : Window
 
     private void SchemesList_ItemClick(object sender, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is ColorScheme scheme)
-        {
-            _viewModel.LoadSchemeCommand.Execute(scheme);
-        }
+        if (e.ClickedItem is ColorScheme scheme) _viewModel.LoadSchemeCommand.Execute(scheme);
     }
 
     private async void DeleteScheme_Click(object sender, RoutedEventArgs e)
@@ -248,21 +223,18 @@ public sealed partial class MainWindow : Window
         {
             var dialog = new ContentDialog
             {
-                Title = "重命名方案",
+                Title             = "重命名方案",
                 PrimaryButtonText = "确定",
-                CloseButtonText = "取消",
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = Content.XamlRoot
+                CloseButtonText   = "取消",
+                DefaultButton     = ContentDialogButton.Primary,
+                XamlRoot          = Content.XamlRoot
             };
 
             var textBox = new TextBox { Text = scheme.Name };
             dialog.Content = textBox;
 
             var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
-            {
-                await _viewModel.RenameSchemeAsync(scheme, textBox.Text.Trim());
-            }
+            if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text)) await _viewModel.RenameSchemeAsync(scheme, textBox.Text.Trim());
         }
     }
 
@@ -280,23 +252,26 @@ public sealed partial class MainWindow : Window
 
         var panel = new StackPanel
         {
-            Spacing = 2,
-            Padding = new Thickness(4),
-            Background = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(220, 30, 30, 30))
+            Spacing    = 2,
+            Padding    = new Thickness(4),
+            Background = new SolidColorBrush(ColorHelper.FromArgb(220, 30, 30, 30))
         };
 
         foreach (var tb in scheme.TextBlocks)
         {
             var fgEntry = _viewModel.ColorDataService.GetEntry(tb.ForegroundColorRow);
             var fgColor = fgEntry?.ThemeColors.TryGetValue(previewTheme, out var c) == true
-                ? c : Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                              ? c
+                              : Color.FromArgb(255, 255, 255, 255);
 
             var textBlock = new TextBlock
             {
-                Text = tb.PreviewText,
+                Text     = tb.PreviewText,
                 FontSize = 14,
-                Foreground = new SolidColorBrush(
-                    Microsoft.UI.ColorHelper.FromArgb(fgColor.A, fgColor.R, fgColor.G, fgColor.B))
+                Foreground = new SolidColorBrush
+                (
+                    ColorHelper.FromArgb(fgColor.A, fgColor.R, fgColor.G, fgColor.B)
+                )
             };
             panel.Children.Add(textBlock);
         }
@@ -307,23 +282,17 @@ public sealed partial class MainWindow : Window
     private void PreviewArea_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
         // If the event wasn't handled by a text block click, deselect
-        if (!e.Handled)
-        {
-            DeselectTextBlock();
-        }
+        if (!e.Handled) DeselectTextBlock();
     }
 
     private void DeselectTextBlock()
     {
         if (_selectedTextBlock == null) return;
 
-        _selectedTextBlock = null;
+        _selectedTextBlock          = null;
         UpdateBlockButton.IsEnabled = false;
         TextBlocksList.SelectedItem = null;
 
-        foreach (var card in _previewCards)
-        {
-            card.SetSelectedBlock(null);
-        }
+        foreach (var card in _previewCards) card.SetSelectedBlock(null);
     }
 }
