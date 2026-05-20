@@ -2,7 +2,7 @@
 
 一款用于预览《最终幻想 14》游戏内 UIColor 套用至文字效果的 Windows 桌面工具
 
-![截图](\Resources\Preview-1.png)
+![截图](https://raw.githubusercontent.com/AtmoOmen/XIVUIColorPreviewer/master/Resources/Preview-1.png)
 
 ## 功能
 
